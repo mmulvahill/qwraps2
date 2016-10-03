@@ -67,7 +67,7 @@ print.qwraps2_summary_table <- function(x, rgroup = attr(x, "rgroups"), rnames =
 #' @param x a variable to summarize
 #' @export
 #' @rdname summary_table
-tab_summary <- function(x) {
+tab_summary <- function(x, ... ) {
   UseMethod("tab_summary")
 }
 
@@ -95,21 +95,21 @@ tab_summary.numeric <- function(x) {
 }
 
 #' @export
-tab_summary.character <- function(x) {
+tab_summary.character <- function(x, ...) {
   v <- deparse(substitute(x))
 
   if (any(is.na(x))) {
     x <- stats::na.omit(x)
     s <- lapply(sort(unique(x)), 
                 function(xx) {
-                  stats::as.formula(paste0("~ qwraps2::n_perc0(", v, " == '", xx, "', na_rm = TRUE)"))
+                  stats::as.formula(paste0("~ qwraps2::n_perc0(", v, " == '", xx, "', ", ..., ", na_rm = TRUE)"))
                 })
-    s <- c(s, stats::as.formula(paste(" ~ qwraps2::n_perc0(is.na(", v, "))")))
+    s <- c(s, stats::as.formula(paste(" ~ qwraps2::n_perc0(is.na(", v, "), ", ..., ")")))
     s <- stats::setNames(s, c(sort(unique(x)), "Unknown"))
   } else {
     s <- lapply(sort(unique(x)), 
                 function(xx) {
-                  stats::as.formula(paste0("~ qwraps2::n_perc0(", v, " == '", xx, "')"))
+                  stats::as.formula(paste0("~ qwraps2::n_perc0(", v, " == '", xx, "', ", ..., ")"))
                 })
     s <- stats::setNames(s, sort(unique(x)))
   } 
@@ -117,20 +117,20 @@ tab_summary.character <- function(x) {
 }
 
 #' @export
-tab_summary.factor <- function(x) {
+tab_summary.factor <- function(x, ...) {
   v <- deparse(substitute(x))
 
   if (any(is.na(x))) {
     s <- lapply(levels(x),
                 function(xx) {
-                  stats::as.formula(paste0("~ qwraps2::n_perc0(", v, " == '", xx, "', na_rm = TRUE)"))
+                  stats::as.formula(paste0("~ qwraps2::n_perc0(", v, " == '", xx, "', ", ..., ", na_rm = TRUE)"))
                 })
-    s <- c(s, stats::as.formula(paste(" ~ qwraps2::n_perc0(is.na(", v, "))")))
+    s <- c(s, stats::as.formula(paste(" ~ qwraps2::n_perc0(is.na(", v, "), ", ..., ")")))
     s <- stats::setNames(s, c(sort(unique(x)), "Unknown"))
   } else {
     s <- lapply(levels(x),
                 function(xx) {
-                  stats::as.formula(paste0("~ qwraps2::n_perc0(", v, " == '", xx, "')"))
+                  stats::as.formula(paste0("~ qwraps2::n_perc0(", v, " == '", xx, "', ", ..., ")"))
                 })
     s <- stats::setNames(s, sort(unique(x)))
   } 
